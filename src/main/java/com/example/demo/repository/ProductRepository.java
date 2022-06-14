@@ -16,4 +16,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     Page<Product> findByTitleLike(String keyword, Pageable pageable);
     long countByCategoryEquals(String category);
     long countByTitleLike(String keyword);
+    List<Product> findByCategoryIn(List<String> category);
 }

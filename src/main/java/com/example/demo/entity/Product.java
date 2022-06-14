@@ -98,4 +98,5 @@ public class Product {
         this.colors = colors;
         this.sizes = sizes;
     }
+
 }

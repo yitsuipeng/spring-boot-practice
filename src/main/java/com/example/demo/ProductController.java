@@ -23,29 +23,33 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("/{category}")
-    public ResponseEntity<ProductResponse> getProduct(@PathVariable(value = "category", required = true) String category,
+    public ResponseEntity<List<Product>> getProduct(@PathVariable(value = "category", required = true) String category,
                                               @RequestParam(defaultValue = "0") int page,
                                               @RequestParam(required = false) Long id,
                                               @RequestParam(required = false) String keyword) {
+        Pageable pageable = PageRequest.of(page, 5, Sort.by("id").ascending());
         try {
-            ProductResponse products = null;
+            Page<Product> products = null;
             if (category == "search") {
                 if (Objects.isNull(keyword))
                     throw new Exception();
                 else
-                    products = productService.getProducts(category, page, null, keyword);
+                    products = productService.findByTitleLike(keyword, pageable);
             }
-            else if (category == "details")
-                if (Objects.isNull(id))
-                    throw new Exception();
-                else
-                    products = productService.getProducts(category, page, id, null);
+//            else if (category == "details")
+//                if (Objects.isNull(id))
+//                    throw new Exception();
+//                else
+//                    products = productService.findById();
             else if (Objects.isNull(category))
-                products = productService.getProducts("all", page, null, null);
+                products = productService.findAll(pageable);
             else
-                products = productService.getProducts(category, page, null, null);
+                products = productService.findByCategoryEquals(category, pageable);
 
-            return ResponseEntity.ok(products);
+            System.out.println(products.getContent());
+            List<Product> result = productService.addVariants(products.getContent());
+
+            return ResponseEntity.ok(result);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

@@ -8,7 +8,6 @@ import java.util.Map;
 
 public class Converter {
     private Converter() {
-
     }
 
     public static ProductResponse toProductResponse(List<Product> product) {

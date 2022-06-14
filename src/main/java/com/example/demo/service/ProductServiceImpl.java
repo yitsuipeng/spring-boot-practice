@@ -58,10 +58,28 @@ public class ProductServiceImpl implements ProductService{
         return Converter.toProductResponse(productResult);
     }
 
+    @Override
+    public Page<Product> findAll(Pageable pageable) {
+        return productRepository.findAll(pageable);
+    }
+
+    @Override
+    public Page<Product> findByCategoryEquals(String category, Pageable pageable) {
+        return productRepository.findByCategoryEquals(category, pageable);
+    }
+
+    @Override
+    public Page<Product> findByTitleLike(String keyword, Pageable pageable) {
+        return productRepository.findByTitleLike(keyword, pageable);
+    }
+
     public List<Product> addVariants(List<Product> productResult) {
-        List<Long> productIds = (List<Long>) productResult
+        List<Long> productIds = productResult
                 .stream()
-                .map(product -> product.getId());
+                .map(product -> product.getId())
+                .collect(Collectors.toList());
+        System.out.println(productIds);
+
         List<ProductVariant> productVariants = productVariantRepository.findByProductIdIn(productIds);
         Map<Long, List<ProductVariant>> variantMap = new HashMap<>();
         productVariants.forEach(v -> {
@@ -69,6 +87,8 @@ public class ProductServiceImpl implements ProductService{
                 variantMap.put(v.getProductId(), new LinkedList<>());
             variantMap.get(v.getProductId()).add(v);
         });
+        System.out.println(variantMap);
+
         productResult.stream().map(p -> {
             if (!variantMap.containsKey(p.getId())) return p;
 
@@ -78,13 +98,13 @@ public class ProductServiceImpl implements ProductService{
 
             variantMap.get(p.getId()).forEach(v -> {
                 Map<String, Object> vmap = new HashMap<>();
-                vmap.put("color_code", v.getColor_code());
+                vmap.put("color_code", v.getColorCode());
                 vmap.put("size", v.getSize());
                 vmap.put("stock", v.getStock());
                 variants.add(vmap);
                 Map<String, String> cmap = new HashMap<>();
-                cmap.put("color_code", v.getColor_code());
-                cmap.put("color_name", v.getColor_name());
+                cmap.put("color_code", v.getColorCode());
+                cmap.put("color_name", v.getColorName());
                 colors.add(cmap);
                 sizes.add(v.getSize());
             });

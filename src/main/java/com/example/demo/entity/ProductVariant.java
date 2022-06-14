@@ -19,10 +19,10 @@ public class ProductVariant {
     private long id;
 
     @Column(name = "color_code")
-    private String color_code;
+    private String colorCode;
 
     @Column(name = "color_name")
-    private String color_name;
+    private String colorName;
 
     @Column(name = "size")
     private String size;
@@ -36,15 +36,15 @@ public class ProductVariant {
     public ProductVariant(){}
 
     public ProductVariant(long id,
-                          String color_code,
-                          String color_name,
+                          String colorCode,
+                          String colorName,
                           String size,
                           long stock,
                           long productId
     ){
         this.id = id;
-        this.color_code = color_code;
-        this.color_name = color_name;
+        this.colorCode = colorCode;
+        this.colorName = colorName;
         this.size = size;
         this.stock = stock;
         this.productId = productId;
