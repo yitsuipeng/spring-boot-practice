@@ -12,6 +12,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -34,8 +37,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@AutoConfigureMockMvc
 public class ProductTest {
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Test
+    public void test() throws Exception {
+        Pageable pageable = PageRequest.of(0, 5, Sort.by("id").ascending());
+        Assert.assertEquals(15, productRepository.findAll().size());
+        Assert.assertEquals(3, productRepository.findByCategoryEquals("men", pageable).getContent().size());
+        Assert.assertEquals(2, productRepository.findByTitleLike("洋裝", pageable).getContent().size());
+
+    }
+
+
 //    @Autowired
 //    private MockMvc mockMvc;
 //
