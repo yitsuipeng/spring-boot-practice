@@ -9,4 +9,5 @@ import java.util.Map;
 @Setter
 public class ProductResponse {
     private Object data;
+    private Integer next_paging;
 }

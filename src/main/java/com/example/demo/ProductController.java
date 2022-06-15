@@ -27,9 +27,10 @@ public class ProductController {
                                               @RequestParam(defaultValue = "0") int page,
                                               @RequestParam(required = false) Long id,
                                               @RequestParam(required = false) String keyword) {
-        Pageable pageable = PageRequest.of(page, 5, Sort.by("id").ascending());
+        Pageable pageable = PageRequest.of(page-1, 5, Sort.by("id").ascending());
+        Page<Product> products = null;
+        ProductResponse response = new ProductResponse();
         try {
-            Page<Product> products = null;
 //            if (category == "search") {
 //                if (Objects.isNull(keyword))
 //                    throw new Exception();
@@ -58,15 +59,17 @@ public class ProductController {
                     products = productService.findByTitleLike(keyword, pageable);
                     break;
                 default:
-                    products = productService.findAll(pageable);
-                    break;
+                    response.setNext_paging(null);
+                    return ResponseEntity.ok(response);
             }
 
-            System.out.println(products.getContent());
             List<Product> result = productService.addVariants(products.getContent());
 
-            ProductResponse response = new ProductResponse();
             response.setData(result);
+            if (products.getTotalPages() > page)
+                response.setNext_paging(page+1);
+            else
+                response.setNext_paging(null);
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
