@@ -18,8 +18,11 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService{
+
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
     private ProductVariantRepository productVariantRepository;
 
     @Override
@@ -78,6 +81,7 @@ public class ProductServiceImpl implements ProductService{
                 .stream()
                 .map(product -> product.getId())
                 .collect(Collectors.toList());
+        System.out.println(productIds.getClass().getName());
         System.out.println(productIds);
 
         List<ProductVariant> productVariants = productVariantRepository.findByProductIdIn(productIds);
@@ -112,7 +116,7 @@ public class ProductServiceImpl implements ProductService{
             p.setColors(colors.stream().collect(Collectors.toList()));
             p.setSizes(sizes.stream().collect(Collectors.toList()));
             return p;
-        });
+        }).collect(Collectors.toList());
         return productResult;
     }
 }

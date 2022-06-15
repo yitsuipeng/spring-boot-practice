@@ -23,33 +23,52 @@ public class ProductController {
     private ProductService productService;
 
     @GetMapping("/{category}")
-    public ResponseEntity<List<Product>> getProduct(@PathVariable(value = "category", required = true) String category,
+    public ResponseEntity<ProductResponse> getProduct(@PathVariable(value = "category", required = true) String category,
                                               @RequestParam(defaultValue = "0") int page,
                                               @RequestParam(required = false) Long id,
                                               @RequestParam(required = false) String keyword) {
         Pageable pageable = PageRequest.of(page, 5, Sort.by("id").ascending());
         try {
             Page<Product> products = null;
-            if (category == "search") {
-                if (Objects.isNull(keyword))
-                    throw new Exception();
-                else
-                    products = productService.findByTitleLike(keyword, pageable);
-            }
+//            if (category == "search") {
+//                if (Objects.isNull(keyword))
+//                    throw new Exception();
+//                else
+//                    products = productService.findByTitleLike(keyword, pageable);
+//            }
 //            else if (category == "details")
 //                if (Objects.isNull(id))
 //                    throw new Exception();
 //                else
 //                    products = productService.findById();
-            else if (Objects.isNull(category))
-                products = productService.findAll(pageable);
-            else
-                products = productService.findByCategoryEquals(category, pageable);
+//            else if (Objects.isNull(category))
+//                products = productService.findAll(pageable);
+//            else
+//                products = productService.findByCategoryEquals(category, pageable);
+            switch (category) {
+                case "all":
+                    products = productService.findAll(pageable);
+                    break;
+                case "men":
+                case "women":
+                case "accessories":
+                    products = productService.findByCategoryEquals(category, pageable);
+                    break;
+                case "search":
+                    products = productService.findByTitleLike(keyword, pageable);
+                    break;
+                default:
+                    products = productService.findAll(pageable);
+                    break;
+            }
 
             System.out.println(products.getContent());
             List<Product> result = productService.addVariants(products.getContent());
 
-            return ResponseEntity.ok(result);
+            ProductResponse response = new ProductResponse();
+            response.setData(result);
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }

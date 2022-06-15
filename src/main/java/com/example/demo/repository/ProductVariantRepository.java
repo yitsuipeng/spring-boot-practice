@@ -10,6 +10,5 @@ import java.util.Collection;
 import java.util.List;
 
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, Integer> {
-    List<ProductVariant> findByProductIdIn(Collection<Long> size);
-    List<ProductVariant> findBySizeIn(List<String> size);
+    List<ProductVariant> findByProductIdIn(List<Long> productIdList);
 }
